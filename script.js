@@ -10,26 +10,18 @@ const resLink = document.getElementById('resLink');
 const loader = document.getElementById('loader');
 const btnUpload = document.getElementById('btnUpload');
 
-// Klik area drop untuk pilih file
 dropZone.onclick = () => fileInput.click();
 
-// Tampilkan nama file saat dipilih
 fileInput.onchange = () => {
     if (fileInput.files[0]) {
         fileNameDisplay.innerText = fileInput.files[0].name;
-        fileNameDisplay.style.color = "#4285F4";
     }
 };
 
 async function uploadFile() {
     const file = fileInput.files[0];
-    
-    if (!file) {
-        alert("Pilih file foto atau video terlebih dahulu!");
-        return;
-    }
+    if (!file) return alert("Pilih file dulu!");
 
-    // Reset UI
     loader.classList.remove('hidden');
     resultBox.classList.add('hidden');
     btnUpload.disabled = true;
@@ -39,22 +31,20 @@ async function uploadFile() {
     
     reader.onload = async () => {
         try {
-            // Bersihkan Base64
             const base64Content = reader.result.split(',')[1];
-            
-            // Generate Nama File Random (agar tidak duplikat)
             const randomID = Math.random().toString(36).substring(2, 8);
-            const cleanFileName = file.name.replace(/\s+/g, '-').toLowerCase();
-            const finalFileName = `${randomID}_${cleanFileName}`;
+            const cleanName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+            const finalFileName = `${randomID}_${cleanName}`;
 
-            // Endpoint API GitHub
+            // Path harus mengarah ke folder 'uploads/'
             const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/uploads/${finalFileName}`;
 
             const response = await fetch(url, {
                 method: "PUT",
                 headers: {
                     "Authorization": `token ${GITHUB_TOKEN.trim()}`,
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Accept": "application/vnd.github.v3+json"
                 },
                 body: JSON.stringify({
                     message: `Upload via SoraaHost: ${finalFileName}`,
@@ -62,46 +52,29 @@ async function uploadFile() {
                 })
             });
 
-            const responseData = await response.json();
+            const data = await response.json();
 
-            if (response.ok) {
-                // Link sesuai domain Vercel Anda
+            if (response.status === 201 || response.ok) {
+                // Gunakan link vercel Anda
                 const publicUrl = `https://hostsoraa.vercel.app/uploads/${finalFileName}`;
                 resLink.value = publicUrl;
                 resultBox.classList.remove('hidden');
-                console.log("Berhasil Terunggah:", responseData);
             } else {
-                // Logika Error Handling
-                let errorMsg = responseData.message;
-                if (response.status === 401) errorMsg = "Error bang.";
-                if (response.status === 404) errorMsg = "Error bang";
-                if (response.status === 403) errorMsg = "Error bang.";
-                
-                alert("Gagal Upload: " + errorMsg);
-                console.error("Detail Error:", responseData);
+                alert("Error GitHub: " + data.message);
+                console.log(data);
             }
-
-        } catch (error) {
-            alert("Terjadi kesalahan koneksi!");
-            console.error(error);
+        } catch (err) {
+            alert("Kesalahan Jaringan!");
+            console.error(err);
         } finally {
             loader.classList.add('hidden');
             btnUpload.disabled = false;
         }
     };
-
-    reader.onerror = () => {
-        alert("Gagal membaca file!");
-        loader.classList.add('hidden');
-        btnUpload.disabled = false;
-    };
 }
 
 function copyLink() {
     resLink.select();
-    resLink.setSelectionRange(0, 99999); // Untuk mobile
-    
-    navigator.clipboard.writeText(resLink.value)
-        .then(() => alert("Link berhasil disalin ke clipboard!"))
-        .catch(() => alert("Gagal menyalin link."));
+    document.execCommand("copy");
+    alert("Link disalin!");
 }
