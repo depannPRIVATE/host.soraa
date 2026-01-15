@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soraa Host | Cloud Storage</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">Soraa<span>Host</span></a>
+            <div class="menu">
+                <a href="index.html">Upload</a>
+                <a href="faq.html">FAQ</a>
+                <a href="privacy.html">Privacy</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="hero">
+        <div class="upload-card">
+            <h2>Soraa Cloud</h2>
+            <p>Simpan momen dalam format digital</p>
+            
+            <div class="drop-zone" id="dropZone">
+                <i class="fas fa-cloud-arrow-up"></i>
+                <p id="fileNameDisplay">Pilih file foto atau video</p>
+                <input type="file" id="fileInput" accept="image/*,video/*" hidden>
+            </div>
+
+            <div class="btn-group">
+                <label for="fileInput" class="btn-select">Ganti File</label>
+                <button onclick="uploadFile()" class="btn-main" id="btnUpload">Upload Sekarang</button>
+            </div>
+
+            <div id="loader" class="hidden">
+                <div class="spinner"></div>
+            </div>
+
+            <div id="result" class="result-box hidden">
+                <p style="margin:0; font-weight:500; color:#188038;">Berhasil Diunggah</p>
+                <div class="link-group">
+                    <input type="text" id="resLink" readonly>
+                    <button onclick="copyLink()"><i class="fas fa-copy"></i></button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
