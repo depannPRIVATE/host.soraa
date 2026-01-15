@@ -33,7 +33,7 @@ async function uploadFile() {
             });
 
             if (res.ok) {
-                const link = `https://host.soraa.vercel.app/uploads/${fileName}`;
+                const link = `https://hostsoraa.vercel.app/uploads/${fileName}`;
                 document.getElementById('resLink').value = link;
                 document.getElementById('result').classList.remove('hidden');
             }
